@@ -1,8 +1,9 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard } from './guards/auth.guard';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { AuthenticationMiddleware } from './middleware/authentication.middleware';
 
 @Module({
@@ -13,6 +14,10 @@ import { AuthenticationMiddleware } from './middleware/authentication.middleware
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
     },
   ],
 })
