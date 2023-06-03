@@ -8,7 +8,9 @@ import {
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(HttpExceptionFilter.name);
+  private readonly logger = new Logger(HttpExceptionFilter.name, {
+    timestamp: true,
+  });
 
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();

@@ -9,7 +9,9 @@ import { Observable, tap } from 'rxjs';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  private readonly logger = new Logger(LoggingInterceptor.name);
+  private readonly logger = new Logger(LoggingInterceptor.name, {
+    timestamp: true,
+  });
 
   intercept(
     context: ExecutionContext,
@@ -21,7 +23,6 @@ export class LoggingInterceptor implements NestInterceptor {
     const { path: url, ip, method } = request;
     const useClass = context.getClass().name;
     const useHandler = context.getHandler().name;
-    const now = Date.now();
 
     this.logger.log(
       `${method} ${url} ${userAgent} ${ip}: ${useClass}().${useHandler}()`,
@@ -36,9 +37,7 @@ export class LoggingInterceptor implements NestInterceptor {
         const { statusCode } = response;
         const contentLength = response.get('content-length') || '';
         this.logger.log(
-          `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${ip}: ${
-            Date.now() - now
-          } ms`,
+          `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${ip}`,
         );
 
         this.logger.debug(res);
