@@ -1,7 +1,5 @@
 # Ignore directory
 dist/
-ex-request-response/
-
 
 # Ignore .env file
 .env
