@@ -1,0 +1,28 @@
+version: '3'
+services:
+  gateway:
+    image: nestjs_ubuntu
+    stdin_open: true
+    tty: true
+    ports:
+      - '3000:3000'
+    volumes:
+      - './gateway:/home'
+    
+  communication:
+    image: nestjs_ubuntu
+    stdin_open: true
+    tty: true
+    ports:
+      - '3001:3001'
+    volumes:
+      - './communication:/home'
+    
+  analytics:
+    image: nestjs_ubuntu
+    stdin_open: true
+    tty: true
+    ports:
+      - '3002:3002'
+    volumes:
+      - './analytics:/home'
