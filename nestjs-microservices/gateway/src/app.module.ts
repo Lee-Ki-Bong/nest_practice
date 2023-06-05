@@ -14,7 +14,7 @@ import { AppService } from './app.service';
       {
         name: 'ANALYTICS',
         transport: Transport.TCP,
-        options: { host: 'nestjs-microservices-analytics-1', port: 3002 },
+        options: { host: 'nestjs-microservices-analytics-1', port: 3003 },
       },
     ]),
   ],

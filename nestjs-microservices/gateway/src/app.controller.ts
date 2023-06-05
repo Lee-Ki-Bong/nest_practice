@@ -1,5 +1,6 @@
 import { Controller, Get, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { tap } from 'rxjs';
 import { AppService } from './app.service';
 
 @Controller('gateway')
@@ -13,20 +14,19 @@ export class AppController {
   @Get()
   sayHelloCommunicator() {
     const msg = this.appService.getHello();
-    const communicationRes = this.clientCommunicator.send(
-      { cmd: 'sayHelloCommunicator' },
-      { message: msg },
-    );
-
-    communicationRes.subscribe((response) => {
-      this.clientAnalytics.emit(
-        { cmd: 'conversationLog' },
-        {
-          client: msg,
-          clientCommunicator: response,
-        },
+    const communicationRes = this.clientCommunicator
+      .send({ cmd: 'sayHelloCommunicator' }, { message: msg })
+      .pipe(
+        tap((response) => {
+          this.clientAnalytics.emit(
+            { cmd: 'conversationLog' },
+            {
+              client: msg,
+              clientCommunicator: response,
+            },
+          );
+        }),
       );
-    });
 
     return communicationRes;
   }
