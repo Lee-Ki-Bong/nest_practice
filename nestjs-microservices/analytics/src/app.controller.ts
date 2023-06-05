@@ -1,5 +1,10 @@
-import { Controller } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
+import { Controller, ExecutionContext } from '@nestjs/common';
+import {
+  Ctx,
+  EventPattern,
+  MessagePattern,
+  TcpContext,
+} from '@nestjs/microservices';
 import { AppService } from './app.service';
 
 @Controller()
@@ -7,7 +12,7 @@ export class AppController {
   private readonly conversations: any[] = [];
   constructor(private readonly appService: AppService) {}
 
-  @EventPattern({ cmd: 'conversationLog' })
+  @MessagePattern({ cmd: 'conversationLog' })
   conversationLog(data) {
     this.conversations.push(data);
     console.log(`대화 기록`, data);
