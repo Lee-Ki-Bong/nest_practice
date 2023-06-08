@@ -1,0 +1,21 @@
+version: '3'
+services:
+  backend:
+    image: nestjs_ubuntu
+    stdin_open: true
+    tty: true
+    ports:
+      - '3000:3000'
+      - '3001:3001'
+      - '3002:3002'
+    volumes:
+      - '/home/dhkehd2/mystudy/language/nestjs/practice/nestjs-authentication:/home'
+  mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+    ports:
+      - '3306:3306'
+    volumes:
+      - './mysql:/var/lib/mysql'
