@@ -79,7 +79,14 @@ export class AuthService {
     return tokens;
   }
 
-  logout() {}
+  async logout(userId: number) {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        hashedRt: null,
+      },
+    });
+  }
 
   refreshTokens() {}
 }
