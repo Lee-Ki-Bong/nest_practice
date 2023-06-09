@@ -4,7 +4,6 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAccessAuthGuard } from 'src/utils/guards/jwt-access-guards';
@@ -12,7 +11,7 @@ import { JwtRefreshAuthGuard } from 'src/utils/guards/jwt-refresh-guards';
 import { Tokens } from 'src/utils/types';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
-import { Request } from 'express';
+import { GetCurrentUser, GetCurrentUserById } from 'src/utils/decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -33,14 +32,17 @@ export class AuthController {
   @UseGuards(JwtAccessAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  logout(@Req() res: Request) {
-    return this.authService.logout(res.user['sub']);
+  logout(@GetCurrentUserById() userId: number) {
+    return this.authService.logout(userId);
   }
 
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  refreshTokens() {
-    return this.authService.refreshTokens();
+  refreshTokens(
+    @GetCurrentUserById() userId: number,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    return this.authService.refreshTokens(userId, refreshToken);
   }
 }

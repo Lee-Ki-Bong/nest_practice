@@ -69,7 +69,7 @@ export class AuthService {
           sub: dto.id,
           email: dto.email,
         },
-        { secret: 'super-refresh-nms-access', expiresIn: '60s' }, // 일반적으로 7일 60 * 60 * 24 * 7
+        { secret: 'super-secret-nms-refresh', expiresIn: '60s' }, // 일반적으로 7일 60 * 60 * 24 * 7
       ),
     ]);
     const tokens: Tokens = {
@@ -86,7 +86,17 @@ export class AuthService {
         hashedRt: null,
       },
     });
+    return true;
   }
 
-  refreshTokens() {}
+  async refreshTokens(userId: number, refreshToken: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new UnauthorizedException('Access Denied');
+
+    const refreshTokenMatches = bcrypt.compare(refreshToken, user.hashedRt);
+    if (!refreshTokenMatches) throw new UnauthorizedException('Access Denied');
+    return true;
+  }
 }
