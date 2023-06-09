@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { JwtAccessStrategy } from './auth/strategy/jwt-access.strategy';
+import { JwtAccessStrategy, JwtRefreshStrategy } from './auth/strategy';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [AuthModule, PrismaModule],
   controllers: [AppController],
-  providers: [AppService, JwtAccessStrategy],
+  providers: [AppService, JwtAccessStrategy, JwtRefreshStrategy],
 })
 export class AppModule {}
