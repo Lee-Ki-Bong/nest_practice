@@ -7,8 +7,6 @@ import { AuthService } from './auth.service';
   imports: [
     JwtModule.register({
       global: true,
-      secret: 'super-secret-nms',
-      signOptions: { expiresIn: '60s' },
     }),
   ],
   controllers: [AuthController],
