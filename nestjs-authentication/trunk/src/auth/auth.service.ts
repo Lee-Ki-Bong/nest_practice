@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
-import * as users from '../users.json';
 import { JwtService } from '@nestjs/jwt';
 import { SignDto } from './dto/sign.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -18,17 +17,19 @@ export class AuthService {
     return await bcrypt.hash(data, 10);
   }
 
-  signInLocal(dto: AuthDto) {
-    const user = users.find((_user) => _user.email === dto.email);
+  async signInLocal(dto: AuthDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: { email: dto.email },
+    });
     if (!user) throw new UnauthorizedException('자격증명이 잘못 되었습니다.');
-    if (user.password !== dto.password)
+
+    const passwordMatches = await bcrypt.compare(dto.password, user.hash);
+    if (!passwordMatches)
       throw new UnauthorizedException('자격증명이 잘못 되었습니다.');
 
-    const signDto: SignDto = {
-      id: user.id,
-      email: user.email,
-    };
-    return this.getTokens(signDto);
+    const tokens = await this.getTokens(user);
+    await this.updateRtHash(user.id, tokens.refresh_token);
+    return tokens;
   }
 
   async signUpLocal(dto: AuthDto): Promise<Tokens> {
