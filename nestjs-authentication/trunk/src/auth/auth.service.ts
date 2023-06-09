@@ -93,7 +93,8 @@ export class AuthService {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
-    if (!user) throw new UnauthorizedException('Access Denied');
+    if (!user || !user.hashedRt)
+      throw new UnauthorizedException('Access Denied');
 
     const refreshTokenMatches = bcrypt.compare(refreshToken, user.hashedRt);
     if (!refreshTokenMatches) throw new UnauthorizedException('Access Denied');
