@@ -3,10 +3,20 @@ import { AuthDto } from './dto/auth.dto';
 import * as users from '../users.json';
 import { JwtService } from '@nestjs/jwt';
 import { SignDto } from './dto/sign.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { Tokens } from '../utils/types';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly prismaService: PrismaService,
+  ) {}
+
+  async hashData(data: string) {
+    return await bcrypt.hash(data, 10);
+  }
 
   signInLocal(dto: AuthDto) {
     const user = users.find((_user) => _user.email === dto.email);
@@ -22,7 +32,21 @@ export class AuthService {
     return this.singUser(signDto);
   }
 
-  signUpLocal(dto: AuthDto) {}
+  async signUpLocal(dto: AuthDto): Promise<Tokens> {
+    const hash = await this.hashData(dto.password);
+    const newUser = this.prismaService.user.create({
+      data: {
+        email: dto.email,
+        hash,
+      },
+    });
+
+    const tokens: Tokens = {
+      access_token: '',
+      refresh_token: '',
+    };
+    return tokens;
+  }
 
   private singUser(dto: SignDto) {
     return this.jwtService.signAsync({
@@ -31,4 +55,8 @@ export class AuthService {
       claim: dto.type,
     });
   }
+
+  logout() {}
+
+  refreshTokens() {}
 }

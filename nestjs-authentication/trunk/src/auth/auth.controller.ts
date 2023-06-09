@@ -15,4 +15,14 @@ export class AuthController {
   signUpLocal(@Body() dto: AuthDto) {
     return this.authService.signUpLocal(dto);
   }
+
+  @Post('logout')
+  logout() {
+    return this.authService.logout();
+  }
+
+  @Post('refresh')
+  refreshTokens() {
+    return this.authService.refreshTokens();
+  }
 }
